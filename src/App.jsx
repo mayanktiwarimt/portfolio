@@ -7,7 +7,7 @@ export default function App(){
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [chatOpen, setChatOpen] = useState(false)
-  const [messages, setMessages] = useState([{from: "bot", text: "Hi! I can search your projects, skills, education, and contact info from Mayank Tiwari's portfolio. Try: 'show projects about arduino' or 'list my skills'"}])
+  const [messages, setMessages] = useState([{from: "bot", text: "Hi! I can help you finding projects, skills, education, and contact info of Mayank Tiwari's portfolio. Try: 'arduino' or 'skills'"}])
   const inputRef = useRef(null)
 
   useEffect(()=>{ document.documentElement.classList.toggle("dark", dark) }, [dark])
@@ -49,7 +49,7 @@ export default function App(){
     if(s.length) hits.push({type:"skills", items:s})
     if(t.includes("contact") || t.includes("email") || t.includes("reach")) hits.push({type:"contact", items:[{email:"mayanktila444@gmail.com", phone:"+91 8273305198"}]})
     if(hits.length) return {matches: hits, reply: `found ${hits.length} matches`}
-    return {matches:[], reply:"no direct matches — try shorter keywords like 'react' or 'e‑commerce'"}
+    return {matches:[], reply:"no longer messages this is not AI — try shorter keywords like 'contact' or 'project'"}
   }
 
   function handleSend(){
@@ -145,7 +145,9 @@ export default function App(){
 
         <section id="about" className="max-w-6xl mx-auto px-6 py-12">
           <h2 className="text-3xl font-bold mb-4">About Me</h2>
-          <p className="text-gray-600 dark:text-gray-300">I am a full-stack engineer with a strong background in embedded systems and IoT. I enjoy building end-to-end products that bridge hardware and software and make everyday tools smarter.</p>
+          <p className="text-gray-600 dark:text-gray-300">As an embedded systems enthusiast and competitive programmer, I aim to develop efficient, real-time solutions
+that enhance automation and accessibility. By leveraging my skills in C++ and microcontroller programming, I strive
+to create impactful technologies for societal benefit.</p>
         </section>
 
         <section id="skills" className="max-w-6xl mx-auto px-6 py-12">
