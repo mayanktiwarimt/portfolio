@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { SunMoon, Menu, X, Search, Github, Linkedin } from 'lucide-react'
 
 export default function App(){
@@ -7,10 +7,40 @@ export default function App(){
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [chatOpen, setChatOpen] = useState(false)
-  const [messages, setMessages] = useState([{from: "bot", text: "Hi! I can help you finding projects, skills, education, and contact info of Mayank Tiwari's portfolio. Try: 'arduino' or 'skills'"}])
+  const [messages, setMessages] = useState([{from: "bot", text: "Hi! I can search your projects, skills, education, and contact info from Mayank Tiwari's portfolio. Try: 'show projects about arduino' or 'list my skills'"}])
   const inputRef = useRef(null)
+  const messagesRef = useRef(null)
+  const prevMessagesLen = useRef(messages.length)
+  const [unread, setUnread] = useState(0)
 
   useEffect(()=>{ document.documentElement.classList.toggle("dark", dark) }, [dark])
+
+  useEffect(()=>{
+    if(chatOpen){
+      setTimeout(()=> inputRef.current?.focus(), 60)
+      setUnread(0)
+    }
+  }, [chatOpen])
+
+  useEffect(()=>{
+    function onKey(e){ if(e.key === 'Escape') setChatOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return ()=> window.removeEventListener('keydown', onKey)
+  }, [])
+
+  useEffect(()=>{
+    const el = messagesRef.current
+    if(!el) return
+    el.scrollTop = el.scrollHeight
+    const prev = prevMessagesLen.current
+    if(messages.length > prev){
+      const newMsg = messages[messages.length - 1]
+      if(newMsg?.from === 'bot' && !chatOpen){
+        setUnread(u=>u+1)
+      }
+    }
+    prevMessagesLen.current = messages.length
+  }, [messages, chatOpen])
 
   const projects = [
     {id:1,title:"Hand Gesture to Voice Converter (Arduino UNO)",tags:["arduino","embedded","assistive"],desc:"Wearable prototype using flex sensors and Arduino UNO to translate hand gestures into voice commands for assistive technology.",certs:["/certs/hand_gesture_certificate.pdf"]},
@@ -49,7 +79,7 @@ export default function App(){
     if(s.length) hits.push({type:"skills", items:s})
     if(t.includes("contact") || t.includes("email") || t.includes("reach")) hits.push({type:"contact", items:[{email:"mayanktila444@gmail.com", phone:"+91 8273305198"}]})
     if(hits.length) return {matches: hits, reply: `found ${hits.length} matches`}
-    return {matches:[], reply:"no longer messages this is not AI — try shorter keywords like 'contact' or 'project'"}
+    return {matches:[], reply:"no direct matches — try shorter keywords like 'react' or 'e‑commerce'"}
   }
 
   function handleSend(){
@@ -62,10 +92,10 @@ export default function App(){
       const r = searchSite(text)
       if(r.matches.length){
         const chunks = r.matches.map(m=>{
-          if(m.type==="projects") return "Projects:\n" + m.items.map(p=>`- ${p.title}: ${p.desc}`).join('\n')
-          if(m.type==="skills") return "Skills:\n" + m.items.map(s=>`- ${s.name} (${s.level}%)`).join('\n')
-          if(m.type==="contact") return "Contact:\n" + m.items.map(c=>`- email: ${c.email} \n- phone: ${c.phone}`).join('\n')
-          return ""
+          if(m.type=== "projects") return 'Projects:\n' + m.items.map(p=>`- ${p.title}: ${p.desc}`).join('\n')
+          if(m.type=== "skills") return 'Skills:\n' + m.items.map(s=>`- ${s.name} (${s.level}%)`).join('\n')
+          if(m.type=== "contact") return 'Contact:\n' + m.items.map(c=>`- email: ${c.email}\n- phone: ${c.phone}`).join('\n')
+          return ''
         }).join('\n\n')
         setMessages(m=>[...m, {from:"bot", text:chunks}])
       } else {
@@ -77,9 +107,15 @@ export default function App(){
 
   function handleKey(e){ if(e.key === "Enter") handleSend() }
 
+  const modalVariant = {
+    hidden: {opacity: 0, scale: 0.98, y: 12},
+    visible: {opacity: 1, scale: 1, y: 0, transition: {type: 'spring', stiffness: 300, damping: 25}},
+    exit: {opacity: 0, scale: 0.98, y: 12, transition: {duration: 0.18}}
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-      <header className="fixed w-full z-40 bg-opacity-60 backdrop-blur p-4">
+      <header className=" w-full z-40 bg-opacity-60 backdrop-blur p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-xl">Mayank Tiwari</div>
@@ -91,9 +127,6 @@ export default function App(){
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={()=>setChatOpen(v=>!v)} className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm flex items-center gap-2">
-              <Search size={16}/> Help
-            </button>
             <button onClick={()=>setDark(d=>!d)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
               <SunMoon size={18}/>
             </button>
@@ -136,7 +169,7 @@ export default function App(){
               <p>Embedded systems, IoT, web dev, algorithms</p>
               <p className="mt-2">Open to opportunities & collaboration.</p>
               <div className="mt-4 flex gap-2">
-                <a href="/Mayank_Tiwari_Resume.pdf" className="px-3 py-2 border rounded">Resume</a>
+                <a href="/Mayank_Tiwari_Resume.pdf" target="_blank" rel="noreferrer" download className="px-3 py-2 border rounded">Resume</a>
                 <a href="#contact" className="px-3 py-2 bg-indigo-600 text-white rounded">Hire me</a>
               </div>
             </div>
@@ -145,9 +178,7 @@ export default function App(){
 
         <section id="about" className="max-w-6xl mx-auto px-6 py-12">
           <h2 className="text-3xl font-bold mb-4">About Me</h2>
-          <p className="text-gray-600 dark:text-gray-300">As an embedded systems enthusiast and competitive programmer, I aim to develop efficient, real-time solutions
-that enhance automation and accessibility. By leveraging my skills in C++ and microcontroller programming, I strive
-to create impactful technologies for societal benefit.</p>
+          <p className="text-gray-600 dark:text-gray-300">I am a full-stack engineer with a strong background in embedded systems and IoT. I enjoy building end-to-end products that bridge hardware and software and make everyday tools smarter.</p>
         </section>
 
         <section id="skills" className="max-w-6xl mx-auto px-6 py-12">
@@ -221,34 +252,82 @@ to create impactful technologies for societal benefit.</p>
         </section>
       </main>
 
-      <div className={`fixed right-6 bottom-6 w-80 max-w-full ${chatOpen ? '' : 'translate-y-6 opacity-90'} transition-all`}>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="flex items-center justify-between px-3 py-2 border-b dark:border-gray-700">
-            <div className="flex items-center gap-2">
-              <Search size={16}/>
-              <div className="font-medium">Portfolio assistant</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={()=>setChatOpen(false)} className="px-2 py-1">Close</button>
-            </div>
-          </div>
+      <div className="fixed right-6 bottom-6 z-50 flex items-center gap-3">
+        <button onClick={()=>setChatOpen(v=>!v)} aria-label="message" className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600 text-white shadow-lg hover:scale-105 transition-transform">
+          <span>💬</span>
+          <span>Message</span>
+          {unread > 0 && (
+            <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{unread > 9 ? '9+' : unread}</span>
+          )}
+        </button>
 
-          <div className="p-3 h-56 overflow-y-auto" style={{background: 'linear-gradient(180deg, rgba(255,255,255,0.02), transparent)'}}>
-            {messages.map((m,i)=> (
-              <div key={i} className={`mb-3 ${m.from==='user' ? 'text-right' : ''}`}>
-                <div className={`${m.from==='user' ? 'inline-block bg-indigo-600 text-white' : 'inline-block bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'} px-3 py-2 rounded-lg`}>{m.text}</div>
-              </div>
-            ))}
+        <button onClick={()=>setChatOpen(v=>!v)} aria-label="open chatbot" className="md:hidden flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg hover:scale-105 transition-transform">
+          <div className="relative"> 
+            <span className="block">💬</span>
+            {unread > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{unread > 9 ? '9+' : unread}</span>
+            )}
           </div>
-
-          <div className="p-3 border-t dark:border-gray-700">
-            <div className="flex gap-2">
-              <input ref={inputRef} value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={handleKey} placeholder="Search projects, skills, contact..." className="flex-1 p-2 rounded border dark:bg-gray-900" />
-              <button onClick={handleSend} className="px-3 py-2 bg-indigo-600 text-white rounded">Send</button>
-            </div>
-          </div>
-        </div>
+        </button>
       </div>
+
+      <AnimatePresence>
+        {chatOpen && (
+          <>
+            <motion.div
+              key="overlay"
+              initial={{opacity:0}}
+              animate={{opacity:1}}
+              exit={{opacity:0}}
+              onClick={()=>setChatOpen(false)}
+              className="fixed inset-0 z-40 bg-black/30"
+              aria-hidden
+            />
+
+            <motion.div
+              key="assistant"
+              id="chatbot"
+              role="dialog"
+              aria-modal="true"
+              aria-label="chatbot"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={modalVariant}
+              className="fixed z-50 right-6 bottom-20 w-96 max-w-full md:right-8 md:bottom-12"
+              onClick={(e)=> e.stopPropagation()}
+            >
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b dark:border-gray-700">
+                  <div className="flex items-center gap-2">
+                    <Search size={16}/>
+                    <div className="font-medium">Chatbot</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={()=>setChatOpen(false)} className="px-2 py-1">Close</button>
+                  </div>
+                </div>
+
+                <div ref={messagesRef} className="p-3 h-56 overflow-y-auto" style={{background: 'linear-gradient(180deg, rgba(255,255,255,0.02), transparent)'}}>
+                  {messages.map((m,i)=> (
+                    <div key={i} className={`mb-3 ${m.from==='user' ? 'text-right' : ''}`}>
+                      <div className={`${m.from==='user' ? 'inline-block bg-indigo-600 text-white' : 'inline-block bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'} px-3 py-2 rounded-lg`}>{m.text}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-3 border-t dark:border-gray-700">
+                  <div className="flex gap-2">
+                    <input ref={inputRef} value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={handleKey} placeholder="Search projects, skills, contact..." className="flex-1 p-2 rounded border dark:bg-gray-900" />
+                    <button onClick={handleSend} className="px-3 py-2 bg-indigo-600 text-white rounded">Send</button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
     </div>
   )
 }
