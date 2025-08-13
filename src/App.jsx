@@ -7,20 +7,18 @@ export default function App(){
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [chatOpen, setChatOpen] = useState(false)
-  const [messages, setMessages] = useState([{from: "bot", text: "Hi! I can search your projects, skills, education, and contact info from Mayank Tiwari's portfolio. Try: 'show projects about arduino' or 'list my skills'"}])
+  const [messages, setMessages] = useState([{from: "bot", text: "Hi! I can help you by searching projects, skills, education, and contact info of Mayank Tiwari's portfolio. Try first by typing : 'arduino' or 'skills'"}])
   const inputRef = useRef(null)
   const messagesRef = useRef(null)
   const prevMessagesLen = useRef(messages.length)
   const [unread, setUnread] = useState(0)
 
+  const [socialIndex, setSocialIndex] = useState(0)
+  const [direction, setDirection] = useState(0)
+
   useEffect(()=>{ document.documentElement.classList.toggle("dark", dark) }, [dark])
 
-  useEffect(()=>{
-    if(chatOpen){
-      setTimeout(()=> inputRef.current?.focus(), 60)
-      setUnread(0)
-    }
-  }, [chatOpen])
+  useEffect(()=>{ if(chatOpen){ setTimeout(()=> inputRef.current?.focus(), 60); setUnread(0) } }, [chatOpen])
 
   useEffect(()=>{
     function onKey(e){ if(e.key === 'Escape') setChatOpen(false) }
@@ -45,7 +43,7 @@ export default function App(){
   const projects = [
     {id:1,title:"Hand Gesture to Voice Converter (Arduino UNO)",tags:["arduino","embedded","assistive"],desc:"Wearable prototype using flex sensors and Arduino UNO to translate hand gestures into voice commands for assistive technology.",certs:["/certs/hand_gesture_certificate.pdf"]},
     {id:2,title:"IoT UPS Temperature Monitor (ITC Limited)",tags:["esp32","iot","ds18b20"],desc:"IoT-based UPS temperature monitoring system using ESP32 and DS18B20 for real-time data acquisition and monitoring.",certs:["/certs/itc_ups_certificate.pdf"]},
-    {id:3,title:"E‑commerce UI",tags:["nextjs","tailwind","stripe"],desc:"Fast product browsing with cart and checkout integration."},
+    {id:3,title:"E-commerce UI",tags:["nextjs","tailwind","stripe"],desc:"Fast product browsing with cart and checkout integration."},
     {id:4,title:"Portfolio CMS",tags:["react","sanity","graphql"],desc:"Headless CMS-driven portfolio with live previews."},
     {id:5,title:"Algorithm Visualizer",tags:["javascript","canvas","d3"],desc:"Interactive visualizations for sorting and graph algorithms."}
   ]
@@ -79,7 +77,7 @@ export default function App(){
     if(s.length) hits.push({type:"skills", items:s})
     if(t.includes("contact") || t.includes("email") || t.includes("reach")) hits.push({type:"contact", items:[{email:"mayanktila444@gmail.com", phone:"+91 8273305198"}]})
     if(hits.length) return {matches: hits, reply: `found ${hits.length} matches`}
-    return {matches:[], reply:"no direct matches — try shorter keywords like 'react' or 'e‑commerce'"}
+    return {matches:[], reply:"this is no AI bot  — try predefined keywords like 'projects' or 'IOT'"}
   }
 
   function handleSend(){
@@ -111,6 +109,12 @@ export default function App(){
     hidden: {opacity: 0, scale: 0.98, y: 12},
     visible: {opacity: 1, scale: 1, y: 0, transition: {type: 'spring', stiffness: 300, damping: 25}},
     exit: {opacity: 0, scale: 0.98, y: 12, transition: {duration: 0.18}}
+  }
+
+  const sliderVariants = {
+    enter: (dir) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir) => ({ x: dir > 0 ? -40 : 40, opacity: 0 })
   }
 
   return (
@@ -151,7 +155,7 @@ export default function App(){
         <section className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-10 items-center">
           <motion.div initial={{opacity:0,x:-30}} animate={{opacity:1,x:0}} transition={{duration:0.5}}>
             <h1 className="text-4xl md:text-5xl font-bold">Hi, I'm Mayank<span className="text-indigo-500">.</span></h1>
-            <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">Full-stack engineer building fast, accessible, and delightful web experiences. I make production-ready apps and delightful UIs.</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">As an embedded systems enthusiast and competitive programmer, I aim to develop efficient, realtime solutions that enhance automation and accessibility. By leveraging my skills in C++ and microcontroller programming, I strive to create impactful technologies for societal benefit.</p>
             <div className="mt-6 flex gap-3">
               <a href="#projects" className="px-4 py-2 rounded-lg bg-indigo-600 text-white">See projects</a>
               <a href="#contact" className="px-4 py-2 rounded-lg border">Contact me</a>
@@ -232,10 +236,48 @@ export default function App(){
               <h3 className="font-semibold">Get in touch</h3>
               <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">Email: <a href="mailto:mayanktila444@gmail.com" className="underline">mayanktila444@gmail.com</a></p>
               <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Phone: +91 8273305198</p>
-              <div className="mt-4 flex gap-2">
-                {socialLinks.map(s=>(
-                  <a key={s.name} href={s.href} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded">{s.icon}<span className="text-sm">{s.name}</span></a>
-                ))}
+
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  onClick={()=>{
+                    setDirection(-1)
+                    setSocialIndex(i=> (i - 1 + socialLinks.length) % socialLinks.length)
+                  }}
+                  className="p-2 bg-gray-700 text-white rounded-full"
+                >
+                  &#8592;
+                </button>
+
+                <div className="overflow-hidden w-40 flex justify-center relative">
+                  <AnimatePresence custom={direction} mode="wait">
+                    <motion.a
+                      key={socialLinks[socialIndex].name}
+                      href={socialLinks[socialIndex].href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded"
+                      custom={direction}
+                      variants={sliderVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.28 }}
+                    >
+                      {socialLinks[socialIndex].icon}
+                      <span className="text-sm capitalize">{socialLinks[socialIndex].name}</span>
+                    </motion.a>
+                  </AnimatePresence>
+                </div>
+
+                <button
+                  onClick={()=>{
+                    setDirection(1)
+                    setSocialIndex(i=> (i + 1) % socialLinks.length)
+                  }}
+                  className="p-2 bg-gray-700 text-white rounded-full"
+                >
+                  &#8594;
+                </button>
               </div>
             </div>
 
@@ -262,7 +304,7 @@ export default function App(){
         </button>
 
         <button onClick={()=>setChatOpen(v=>!v)} aria-label="open chatbot" className="md:hidden flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg hover:scale-105 transition-transform">
-          <div className="relative"> 
+          <div className="relative">
             <span className="block">💬</span>
             {unread > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{unread > 9 ? '9+' : unread}</span>
