@@ -65,7 +65,7 @@ export default function App(){
     {name:'linkedin',href:'https://linkedin.com/in/mayanktiwarimtr',icon:<Linkedin size={16}/>},
     {name:'leetcode',href:'https://leetcode.com/u/begineercoder/',icon:<img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/leetcode.svg' alt='leetcode' className='w-4 h-4'/>},
     {name:'codeforces',href:'https://codeforces.com/profile/mayanktiwarimtr',icon:<img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/codeforces.svg' alt='codeforces' className='w-4 h-4'/>},
-    {name:'gfg',href:'https://www.geeksforgeeks.org/user/mayanktiwarimtr/',icon:<img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/geekforgeeks.svg' alt='gfg' className='w-4 h-4'/>},
+    { name: 'gfg', href: 'https://www.geeksforgeeks.org/user/mayanktiwarimtr/',icon: <img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/geeksforgeeks.svg' alt='gfg' className='w-4 h-4'/>},
     {name:'codechef',href:'https://www.codechef.com/users/mayank_tiwari2',icon:<img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/codechef.svg' alt='codechef' className='w-4 h-4'/>}
   ]
 
