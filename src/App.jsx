@@ -41,8 +41,8 @@ export default function App(){
   }, [messages, chatOpen])
 
   const projects = [
-    {id:1,title:"Hand Gesture to Voice Converter (Arduino UNO)",tags:["arduino","embedded","assistive"],desc:"Wearable prototype using flex sensors and Arduino UNO to translate hand gestures into voice commands for assistive technology.",certs:["/certs/hand_gesture_certificate.pdf"]},
-    {id:2,title:"IoT UPS Temperature Monitor (ITC Limited)",tags:["esp32","iot","ds18b20"],desc:"IoT-based UPS temperature monitoring system using ESP32 and DS18B20 for real-time data acquisition and monitoring.",certs:["/certs/itc_ups_certificate.pdf"]},
+    {id:1,title:"Hand Gesture to Voice Converter (Arduino UNO)",tags:["arduino","embedded","assistive"],desc:"Wearable prototype using flex sensors and Arduino UNO to translate hand gestures into voice commands for assistive technology.",certs:["/certs/hand_gesture_certificate.jpg"]},
+    {id:2,title:"IoT UPS Temperature Monitor (ITC Limited)",tags:["esp32","iot","ds18b20"],desc:"IoT-based UPS temperature monitoring system using ESP32 and DS18B20 for real-time data acquisition and monitoring.",certs:["/certs/itc_ups_certificate.jpg"]},
     {id:3,title:"Chatbot (portfolio assistant)",tags:["react","chatbot","assistant"],desc:"a small chatbot integrated into this portfolio to guide visitors and answer quick questions about projects and contact details. it helps users explore the site and jump straight to relevant sections or resources.",linkLabel:"chatbot"}
   ]
 
