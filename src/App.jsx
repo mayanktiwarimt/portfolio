@@ -43,9 +43,7 @@ export default function App(){
   const projects = [
     {id:1,title:"Hand Gesture to Voice Converter (Arduino UNO)",tags:["arduino","embedded","assistive"],desc:"Wearable prototype using flex sensors and Arduino UNO to translate hand gestures into voice commands for assistive technology.",certs:["/certs/hand_gesture_certificate.pdf"]},
     {id:2,title:"IoT UPS Temperature Monitor (ITC Limited)",tags:["esp32","iot","ds18b20"],desc:"IoT-based UPS temperature monitoring system using ESP32 and DS18B20 for real-time data acquisition and monitoring.",certs:["/certs/itc_ups_certificate.pdf"]},
-    {id:3,title:"E-commerce UI",tags:["nextjs","tailwind","stripe"],desc:"Fast product browsing with cart and checkout integration."},
-    {id:4,title:"Portfolio CMS",tags:["react","sanity","graphql"],desc:"Headless CMS-driven portfolio with live previews."},
-    {id:5,title:"Algorithm Visualizer",tags:["javascript","canvas","d3"],desc:"Interactive visualizations for sorting and graph algorithms."}
+    {id:3,title:"Chatbot (portfolio assistant)",tags:["react","chatbot","assistant"],desc:"a small chatbot integrated into this portfolio to guide visitors and answer quick questions about projects and contact details. it helps users explore the site and jump straight to relevant sections or resources.",linkLabel:"chatbot"}
   ]
 
   const skills = [
@@ -182,7 +180,7 @@ export default function App(){
 
         <section id="about" className="max-w-6xl mx-auto px-6 py-12">
           <h2 className="text-3xl font-bold mb-4">About Me</h2>
-          <p className="text-gray-600 dark:text-gray-300">I am a full-stack engineer with a strong background in embedded systems and IoT. I enjoy building end-to-end products that bridge hardware and software and make everyday tools smarter.</p>
+          <p className="text-gray-600 dark:text-gray-300">I am a B.Tech ECE student with a strong background in embedded systems,IoT and competative programming. I enjoy building end-to-end products that bridge hardware and software and make everyday tools smarter.</p>
         </section>
 
         <section id="skills" className="max-w-6xl mx-auto px-6 py-12">
@@ -222,6 +220,11 @@ export default function App(){
                     {p.certs.map((c,i)=>(
                       <a key={i} href={c} className="underline mr-3">certificate</a>
                     ))}
+                  </div>
+                )}
+                {p.linkLabel && (
+                  <div className="mt-3">
+                    <a href="#" onClick={(e)=>{e.preventDefault(); setChatOpen(true)}} className="underline">{p.linkLabel}</a>
                   </div>
                 )}
               </div>
